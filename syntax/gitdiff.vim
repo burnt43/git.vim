@@ -2,8 +2,8 @@ if exists("b:current_syntax")
   finish
 endif
 
-syntax match gitdiffRemoval "\v^-.*$"
-syntax match gitdiffAddition "\v^+.*$"
+syntax region gitdiffRemoval start=/\v^-/ end=/\v$/
+syntax region gitdiffAddition start=/\v^+/ end=/\v$/
 
 highlight link gitdiffRemoval Keyword
 highlight link gitdiffAddition Exception
