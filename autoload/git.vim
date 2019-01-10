@@ -18,7 +18,7 @@ function! git#GitDiff()
   let current_directory                      = fnamemodify(bufname("%"), ":p:h")
   let closest_git_repo_directory             = git#FindGitRepo()
   let full_path_of_buffer                    = fnamemodify(bufname("%"), ":p")
-  let buffer_path_relative_to_repo_directory = fnamemodify(full_path_of_buffer, ':s?' . closest_git_repo_directory . '??') 
+  let buffer_path_relative_to_repo_directory = fnamemodify(full_path_of_buffer, ':s?' . closest_git_repo_directory . '/??') 
 
   if closest_git_repo_directory !=# -1
     let git_diff_result = system("cd " . closest_git_repo_directory . "&& git diff " . buffer_path_relative_to_repo_directory)
