@@ -15,7 +15,7 @@ endfunction
 function! git#FindBufferNameRelativeToGitRepo(git_repo_directory)
   let full_path_of_buffer = fnamemodify(bufname("%"), ":p")
 
-  return fnamemodify(full_path_of_buffer, ':s?' . git_repo_directory . '/??') 
+  return fnamemodify(full_path_of_buffer, ':s?' . a:git_repo_directory . '/??') 
 endfunction
 
 function! git#GitDiff()
