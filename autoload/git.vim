@@ -12,16 +12,20 @@ function! git#FindGitRepo()
   return -1
 endfunction
 
+function! git#FindBufferNameRelativeToGitRepo(git_repo_directory)
+  let full_path_of_buffer = fnamemodify(bufname("%"), ":p")
+
+  return fnamemodify(full_path_of_buffer, ':s?' . git_repo_directory . '/??') 
+endfunction
+
 function! git#GitDiff()
   write
 
-  let current_directory                      = fnamemodify(bufname("%"), ":p:h")
-  let closest_git_repo_directory             = git#FindGitRepo()
-  let full_path_of_buffer                    = fnamemodify(bufname("%"), ":p")
-  let buffer_path_relative_to_repo_directory = fnamemodify(full_path_of_buffer, ':s?' . closest_git_repo_directory . '/??') 
+  let current_directory  = fnamemodify(bufname("%"), ":p:h")
+  let git_repo_directory = git#FindGitRepo()
 
-  if closest_git_repo_directory !=# -1
-    let git_diff_result = system("cd " . closest_git_repo_directory . "&& git diff " . buffer_path_relative_to_repo_directory)
+  if git_repo_directory !=# -1
+    let git_diff_result = system("cd " . git_repo_directory . "&& git diff " . git#FindBufferNameRelativeToGitRepo(git_repo_directory))
 
     if git_diff_result =~ '\v^Not a git repository'
       echoerr "not a git repo"
