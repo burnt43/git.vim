@@ -15,11 +15,13 @@ endfunction
 function! git#GitDiff()
   write
 
-  let current_directory          = fnamemodify(bufname("%"), ":p:h")
-  let closest_git_repo_directory = git#FindGitRepo()
+  let current_directory                      = fnamemodify(bufname("%"), ":p:h")
+  let closest_git_repo_directory             = git#FindGitRepo()
+  let full_path_of_buffer                    = fnamemodify(bufname("%"), ":p")
+  let buffer_path_relative_to_repo_directory = fnamemodify(full_path_of_buffer, ':s?' . closest_git_repo_directory . '??') 
 
   if closest_git_repo_directory !=# -1
-    let git_diff_result = system("cd " . closest_git_repo_directory . "&& git diff " . bufname("%"))
+    let git_diff_result = system("cd " . closest_git_repo_directory . "&& git diff " . buffer_path_relative_to_repo_directory)
 
     if git_diff_result =~ '\v^Not a git repository'
       echoerr "not a git repo"
