@@ -1,3 +1,4 @@
+" private functions
 function! git#FindGitRepo()
   let current_directory = fnamemodify(bufname("%"), ":p:h")
   
@@ -18,6 +19,7 @@ function! git#FindBufferNameRelativeToGitRepo(git_repo_directory)
   return fnamemodify(full_path_of_buffer, ':s?' . a:git_repo_directory . '/??') 
 endfunction
 
+" public functions
 function! git#GitDiff()
   write
 
@@ -50,4 +52,16 @@ function! git#GitDiff()
   else
     echoerr "not a git repo"
   end
+endfunction
+
+function! git#GitRefresh()
+  let current_directory  = fnamemodify(bufname("%"), ":p:h")
+  let git_repo_directory = git#FindGitRepo()
+
+  if git_repo_directory !=# -1
+    execute "silent !cd " . git_repo_directory . " && git checkout " . git#FindBufferNameRelativeToGitRepo(git_repo_directory) . " " . current_directory 
+    edit
+  else
+    echoerr "not a git repo"
+  endif
 endfunction
