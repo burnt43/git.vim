@@ -61,6 +61,7 @@ function! git#GitRefresh()
   if git_repo_directory !=# -1
     execute "silent !cd " . git_repo_directory . " && git checkout " . git#FindBufferNameRelativeToGitRepo(git_repo_directory) . " " . current_directory 
     edit
+    redraw!
   else
     echoerr "not a git repo"
   endif
