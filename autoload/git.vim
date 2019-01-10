@@ -1,4 +1,4 @@
-" private functions
+" private functions {{{
 function! git#FindGitRepo()
   let current_directory = fnamemodify(bufname("%"), ":p:h")
   
@@ -18,8 +18,8 @@ function! git#FindBufferNameRelativeToGitRepo(git_repo_directory)
 
   return fnamemodify(full_path_of_buffer, ':s?' . a:git_repo_directory . '/??') 
 endfunction
-
-" public functions
+" }}}
+" public functions {{{
 function! git#GitDiff()
   write
 
@@ -66,3 +66,4 @@ function! git#GitRefresh()
     echoerr "not a git repo"
   endif
 endfunction
+" }}}
