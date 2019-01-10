@@ -59,7 +59,7 @@ function! git#GitRefresh()
   let git_repo_directory = git#FindGitRepo()
 
   if git_repo_directory !=# -1
-    execute "silent !cd " . git_repo_directory . " && git checkout " . git#FindBufferNameRelativeToGitRepo(git_repo_directory) . " " . current_directory 
+    execute "silent !cd " . git_repo_directory . " && git checkout " . git#FindBufferNameRelativeToGitRepo(git_repo_directory) . " && cd " . current_directory 
     edit
     redraw!
   else
