@@ -24,8 +24,10 @@ function! git#OpenOrFocusBuffer(buffer_name)
 
   if buffer_number >= 0
     execute buffer_number . "wincmd w"
+    return 0
   else
     execute "split " . a:buffer_name
+    return 1
   endif
 endfunction
 " }}}
@@ -73,8 +75,14 @@ function! git#GitCommit()
   let commit_edit_msg_filename = git_repo_directory . '/.git/COMMIT_EDITMSG'
 
   if git_repo_directory !=# -1
-    call git#OpenOrFocusBuffer(commit_edit_msg_filename)
+    let open_buffer_result = git#OpenOrFocusBuffer(commit_edit_msg_filename)
 
+    if open_buffer_result
+      echom("written = 0")
+      let b:git_commit_file_written = 0
+    endif
+
+    autocmd BufWritePost <buffer> let b:git_commit_file_written=1
     autocmd BufWinLeave <buffer> execute "echom('this is the part where we commit and push')"
 
     normal! ggdG
