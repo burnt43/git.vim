@@ -30,6 +30,10 @@ function! git#OpenOrFocusBuffer(buffer_name)
     return 1
   endif
 endfunction
+
+function! git#GitCommitAndPushCommitMsgFile(git_repo_directory, commit_msg_filename)
+  let result = system("cd " . git_repo_directory . " && git commit -F " . commit_msg_filename . " && git push")
+endfunction
 " }}}
 " public functions {{{
 function! git#GitDiff()
@@ -71,21 +75,20 @@ endfunction
 function! git#GitCommit()
   write
 
-  let git_repo_directory       = git#FindGitRepo()
-  let commit_edit_msg_filename = git_repo_directory . '/.git/COMMIT_EDITMSG'
+  let git_repo_directory  = git#FindGitRepo()
+  let commit_msg_filename = git_repo_directory . '/.git/COMMIT_EDITMSG'
 
   if git_repo_directory !=# -1
-    let open_buffer_result = git#OpenOrFocusBuffer(commit_edit_msg_filename)
+    let open_buffer_result = git#OpenOrFocusBuffer(commit_msg_filename)
 
     if open_buffer_result
-      echom("written = 0")
       let b:git_commit_file_written = 0
     endif
 
     augroup git_commit
       autocmd!
-      autocmd BufWritePost <buffer> echom("written=1") | let b:git_commit_file_written=1
-      autocmd BufWinLeave <buffer> execute "echom('this is the part where we commit and push')"
+      autocmd BufWritePost <buffer> let b:git_commit_file_written=1
+      autocmd BufWinLeave <buffer> call git#GitCommitAndPushCommitMsgFile(git_repo_directory, commit_msg_filename)
     augroup END
 
     normal! ggdG
