@@ -28,23 +28,11 @@ function! git#OpenOrFocusBuffer(buffer_name)
     execute "split " . a:buffer_name
   endif
 endfunction
-
-function! git#StoreCurrentDirectory()
-  let g:git_current_directory = fnamemodify(bufname("%"), ":p:h")
-endfunction
-
-function! git#CdToStoredDirectory()
-  if !empty(g:git_current_directory)
-    execute "silent !cd " . g:git_current_directory
-    redraw!
-  end
-endfunction
 " }}}
 " public functions {{{
 function! git#GitDiff()
   write
 
-  call git#StoreCurrentDirectory()
   let git_repo_directory = git#FindGitRepo()
 
   if git_repo_directory !=# -1
@@ -61,19 +49,16 @@ function! git#GitDiff()
 
       call append(0, split(git_diff_result, '\v\n'))
     end
-
-    call git#CdToStoredDirectory()
   else
     echoerr "not a git repo"
   end
 endfunction
 
 function! git#GitRefresh()
-  let current_directory  = fnamemodify(bufname("%"), ":p:h")
   let git_repo_directory = git#FindGitRepo()
 
   if git_repo_directory !=# -1
-    execute "silent !cd " . git_repo_directory . " && git checkout " . git#FindBufferNameRelativeToGitRepo(git_repo_directory) . " && cd " . current_directory 
+    execute "silent !cd " . git_repo_directory . " && git checkout " . git#FindBufferNameRelativeToGitRepo(git_repo_directory)
     edit
     redraw!
   else
