@@ -25,6 +25,7 @@ function! git#CommitMsgFilename()
     return git_repo_root . '/.git/COMMIT_EDITMSG'
   else
     echoerr "not a git repo"
+    return -1
   endif
 endfunction
 
@@ -52,9 +53,10 @@ function! git#GitCommitAndPushCommitMsgFile()
 
     if git_repo_root !=# -1
       let result = system("cd " . git_repo_root . " && git add " . b:file_to_commit . " && git commit -F " . git#CommitMsgFilename() . " && git push")
-      silent echom(result)
+      echom(result)
     else
       echoerr "not a git repo"
+      return -1
     endif
   endif
 endfunction
@@ -73,7 +75,7 @@ function! git#GitDiff()
     else
       call git#OpenOrFocusBuffer('__Git_Diff__')
 
-      normal! ggdGi
+      normal! ggdG
       setlocal filetype=gitdiff
       setlocal buftype=nofile
 
@@ -117,7 +119,7 @@ function! git#GitCommit()
       autocmd BufWinLeave <buffer> call git#GitCommitAndPushCommitMsgFile()
     augroup END
 
-    normal! ggdG
+    normal! ggdGi
     setlocal filetype=gitcommit
   else
     echoerr "not a git repo"
