@@ -20,12 +20,12 @@ function! git#FindBufferNameRelativeToGitRepo(git_repo_directory)
 endfunction
 
 function! git#OpenOrFocusBuffer(buffer_name)
-  let buffer = bufwinnr(buffer_name)
+  let buffer_number = bufwinnr(buffer_name)
 
-  if buffer >= 0
-    execute buffer . "wincmd w"
+  if buffer_number >= 0
+    execute buffer_number . "wincmd w"
   else
-    execute "split " . buffer_name
+    execute "split " . a:buffer_name
   endif
 endfunction
 
