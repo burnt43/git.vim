@@ -47,15 +47,15 @@ function! git#OpenOrFocusBuffer(buffer_name)
 endfunction
 
 function! git#GitCommitAndPushCommitMsgFile()
-  let git_repo_root = git#FindGitRepoRoot()
-  echom("commiting...")
+  if b:git_commit_file_written ==# 1
+    let git_repo_root = git#FindGitRepoRoot()
 
-  if git_repo_root !=# -1
-    echom("really commiting...")
-    let result = system("cd " . git_repo_root . " && git add " . b:file_to_commit . " && git commit -F " . git#CommitMsgFilename() . " && git push")
-    echom(result)
-  else
-    echoerr "not a git repo"
+    if git_repo_root !=# -1
+      let result = system("cd " . git_repo_root . " && git add " . b:file_to_commit . " && git commit -F " . git#CommitMsgFilename() . " && git push")
+      silent echom(result)
+    else
+      echoerr "not a git repo"
+    endif
   endif
 endfunction
 " }}}
