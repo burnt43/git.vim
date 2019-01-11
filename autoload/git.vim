@@ -18,12 +18,33 @@ function! git#FindBufferNameRelativeToGitRepo(git_repo_directory)
 
   return fnamemodify(full_path_of_buffer, ':s?' . a:git_repo_directory . '/??') 
 endfunction
+
+function! git#OpenOrFocusBuffer(buffer_name)
+  let buffer = bufwinnr(buffer_name)
+
+  if buffer >= 0
+    execute buffer . "wincmd w"
+  else
+    execute "split " . buffer_name
+  endif
+endfunction
+
+function! git#StoreCurrentDirectory()
+  let g:git_current_directory = fnamemodify(bufname("%"), ":p:h")
+endfunction
+
+function! git#CdToStoredDirectory()
+  if !empty(g:git_current_directory)
+    execute "silent !cd " . g:git_current_directory
+    redraw!
+  end
+endfunction
 " }}}
 " public functions {{{
 function! git#GitDiff()
   write
 
-  let current_directory  = fnamemodify(bufname("%"), ":p:h")
+  git#StoreCurrentDirectory()
   let git_repo_directory = git#FindGitRepo()
 
   if git_repo_directory !=# -1
@@ -32,13 +53,7 @@ function! git#GitDiff()
     if git_diff_result =~ '\v^Not a git repository'
       echoerr "not a git repo"
     else
-      let git_diff_buffer = bufwinnr('__Git_Diff__')
-
-      if git_diff_buffer >= 0
-        execute git_diff_buffer . "wincmd w"
-      else
-        split __Git_Diff__
-      endif
+      git#OpenOrFocusBuffer('__Git_Diff__')
 
       normal! ggdG
       setlocal filetype=gitdiff
@@ -47,8 +62,7 @@ function! git#GitDiff()
       call append(0, split(git_diff_result, '\v\n'))
     end
 
-    execute "silent !cd " . current_directory
-    redraw!
+    git#CdToStoredDirectory()
   else
     echoerr "not a git repo"
   end
@@ -65,5 +79,8 @@ function! git#GitRefresh()
   else
     echoerr "not a git repo"
   endif
+endfunction
+
+function! git#GitCommit()
 endfunction
 " }}}
