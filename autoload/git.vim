@@ -122,7 +122,7 @@ function! git#GitCommit()
     normal! ggdG
     setlocal filetype=gitcommit
 
-    feedkeys('i')
+    call feedkeys('i')
   else
     echoerr "not a git repo"
   end
