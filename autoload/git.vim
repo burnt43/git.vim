@@ -1,22 +1,37 @@
 " private functions {{{
-function! git#FindGitRepo()
-  let current_directory = fnamemodify(bufname("%"), ":p:h")
-  
-  while current_directory !=# '/'
-    if !empty(glob(current_directory . '/' . '.git'))
-      return current_directory
-    else
-      let current_directory = fnamemodify(current_directory, ":h")
-    endif
-  endwhile
+function! git#FindGitRepoRoot()
+  if exists("b:git_repo_root")
+    return b:git_repo_root
+  else
+    let current_directory = fnamemodify(bufname("%"), ":p:h")
+    
+    while current_directory !=# '/'
+      if !empty(glob(current_directory . '/' . '.git'))
+        let b:git_repo_root = current_directory
+        return b:git_repo_root
+      else
+        let current_directory = fnamemodify(current_directory, ":h")
+      endif
+    endwhile
 
-  return -1
+    return -1
+  endif
 endfunction
 
-function! git#FindBufferNameRelativeToGitRepo(git_repo_directory)
+function! git#CommitMsgFilename()
+  let git_repo_root = git#FindGitRepoRoot()
+
+  if git_repo_root !=# -1
+    return git_repo_root . '/.git/COMMIT_EDITMSG'
+  else
+    echoerr "not a git repo"
+  endif
+endfunction
+
+function! git#FindBufferNameRelativeToGitRepo()
   let full_path_of_buffer = fnamemodify(bufname("%"), ":p")
 
-  return fnamemodify(full_path_of_buffer, ':s?' . a:git_repo_directory . '/??') 
+  return fnamemodify(full_path_of_buffer, ':s?' . git#FindGitRepoRoot() . '/??') 
 endfunction
 
 function! git#OpenOrFocusBuffer(buffer_name)
@@ -31,18 +46,24 @@ function! git#OpenOrFocusBuffer(buffer_name)
   endif
 endfunction
 
-function! git#GitCommitAndPushCommitMsgFile(git_repo_directory, commit_msg_filename)
-  let result = system("cd " . git_repo_directory . " && git commit -F " . commit_msg_filename . " && git push")
+function! git#GitCommitAndPushCommitMsgFile()
+  let git_repo_root = git#FindGitRepoRoot()
+
+  if git_repo_root !=# -1
+    let result = system("cd " . git_repo_root . " && git commit -F " . git#CommitMsgFilename() . " && git push")
+  else
+    echoerr "not a git repo"
+  endif
 endfunction
 " }}}
 " public functions {{{
 function! git#GitDiff()
   write
 
-  let git_repo_directory = git#FindGitRepo()
+  let git_repo_root = git#FindGitRepoRoot()
 
-  if git_repo_directory !=# -1
-    let git_diff_result = system("cd " . git_repo_directory . "&& git diff " . git#FindBufferNameRelativeToGitRepo(git_repo_directory))
+  if git_repo_root !=# -1
+    let git_diff_result = system("cd " . git_repo_root . "&& git diff " . git#FindBufferNameRelativeToGitRepo())
 
     if git_diff_result =~ '\v^Not a git repository'
       echoerr "not a git repo"
@@ -61,10 +82,10 @@ function! git#GitDiff()
 endfunction
 
 function! git#GitRefresh()
-  let git_repo_directory = git#FindGitRepo()
+  let git_repo_root = git#FindGitRepoRoot()
 
-  if git_repo_directory !=# -1
-    execute "silent !cd " . git_repo_directory . " && git checkout " . git#FindBufferNameRelativeToGitRepo(git_repo_directory)
+  if git_repo_root !=# -1
+    execute "silent !cd " . git_repo_root . " && git checkout " . git#FindBufferNameRelativeToGitRepo()
     edit
     redraw!
   else
@@ -75,10 +96,10 @@ endfunction
 function! git#GitCommit()
   write
 
-  let git_repo_directory  = git#FindGitRepo()
-  let commit_msg_filename = git_repo_directory . '/.git/COMMIT_EDITMSG'
+  let git_repo_root  = git#FindGitRepoRoot()
+  let commit_msg_filename = git_repo_root . '/.git/COMMIT_EDITMSG'
 
-  if git_repo_directory !=# -1
+  if git_repo_root !=# -1
     let open_buffer_result = git#OpenOrFocusBuffer(commit_msg_filename)
 
     if open_buffer_result
@@ -88,7 +109,7 @@ function! git#GitCommit()
     augroup git_commit
       autocmd!
       autocmd BufWritePost <buffer> let b:git_commit_file_written=1
-      autocmd BufWinLeave <buffer> call git#GitCommitAndPushCommitMsgFile(git_repo_directory, commit_msg_filename)
+      autocmd BufWinLeave <buffer> call git#GitCommitAndPushCommitMsgFile()
     augroup END
 
     normal! ggdG
