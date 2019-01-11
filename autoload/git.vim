@@ -67,5 +67,18 @@ function! git#GitRefresh()
 endfunction
 
 function! git#GitCommit()
+  write
+
+  let git_repo_directory = git#FindGitRepo()
+
+  if git_repo_directory !=# -1
+    call git#OpenOrFocusBuffer('__Git_Commit__')
+
+    normal! ggdG
+    setlocal filetype=gitcommit
+    setlocal buftype=nofile
+  else
+    echoerr "not a git repo"
+  end
 endfunction
 " }}}
