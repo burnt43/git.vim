@@ -75,6 +75,8 @@ function! git#GitCommit()
   if git_repo_directory !=# -1
     call git#OpenOrFocusBuffer(commit_edit_msg_filename)
 
+    autocmd BufWinLeave <buffer> execute "echom('this is the part where we commit and push')"
+
     normal! ggdG
     setlocal filetype=gitcommit
   else
