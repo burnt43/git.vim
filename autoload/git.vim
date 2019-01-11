@@ -21,6 +21,7 @@ endfunction
 
 function! git#OpenOrFocusBuffer(buffer_name)
   let buffer_number = bufwinnr(buffer_name)
+  echom "buffer_number: " . buffer_number
 
   if buffer_number >= 0
     execute buffer_number . "wincmd w"
