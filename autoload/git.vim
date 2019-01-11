@@ -82,8 +82,11 @@ function! git#GitCommit()
       let b:git_commit_file_written = 0
     endif
 
-    autocmd BufWritePost <buffer> let b:git_commit_file_written=1
-    autocmd BufWinLeave <buffer> execute "echom('this is the part where we commit and push')"
+    augroup git_commit
+      autocmd!
+      autocmd BufWritePost <buffer> echom("written=1") | let b:git_commit_file_written=1
+      autocmd BufWinLeave <buffer> execute "echom('this is the part where we commit and push')"
+    augroup END
 
     normal! ggdG
     setlocal filetype=gitcommit
