@@ -53,6 +53,7 @@ function! git#GitCommitAndPushCommitMsgFile()
   if git_repo_root !=# -1
     echom("really commiting...")
     let result = system("cd " . git_repo_root . " && git commit -F " . git#CommitMsgFilename() . " && git push")
+    echom(result)
   else
     echoerr "not a git repo"
   endif
