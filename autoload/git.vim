@@ -44,7 +44,7 @@ endfunction
 function! git#GitDiff()
   write
 
-  git#StoreCurrentDirectory()
+  call git#StoreCurrentDirectory()
   let git_repo_directory = git#FindGitRepo()
 
   if git_repo_directory !=# -1
@@ -53,7 +53,7 @@ function! git#GitDiff()
     if git_diff_result =~ '\v^Not a git repository'
       echoerr "not a git repo"
     else
-      git#OpenOrFocusBuffer('__Git_Diff__')
+      call git#OpenOrFocusBuffer('__Git_Diff__')
 
       normal! ggdG
       setlocal filetype=gitdiff
@@ -62,7 +62,7 @@ function! git#GitDiff()
       call append(0, split(git_diff_result, '\v\n'))
     end
 
-    git#CdToStoredDirectory()
+    call git#CdToStoredDirectory()
   else
     echoerr "not a git repo"
   end
