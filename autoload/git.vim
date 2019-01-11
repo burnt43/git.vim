@@ -69,14 +69,14 @@ endfunction
 function! git#GitCommit()
   write
 
-  let git_repo_directory = git#FindGitRepo()
+  let git_repo_directory       = git#FindGitRepo()
+  let commit_edit_msg_filename = git_repo_directory . '/.git/COMMIT_EDITMSG'
 
   if git_repo_directory !=# -1
-    call git#OpenOrFocusBuffer('__Git_Commit__')
+    call git#OpenOrFocusBuffer(commit_edit_msg_filename)
 
     normal! ggdG
     setlocal filetype=gitcommit
-    setlocal buftype=nofile
   else
     echoerr "not a git repo"
   end
