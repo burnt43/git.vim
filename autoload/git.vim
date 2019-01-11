@@ -20,8 +20,7 @@ function! git#FindBufferNameRelativeToGitRepo(git_repo_directory)
 endfunction
 
 function! git#OpenOrFocusBuffer(buffer_name)
-  let buffer_number = bufwinnr(buffer_name)
-  echom "buffer_number: " . buffer_number
+  let buffer_number = bufwinnr(a:buffer_name)
 
   if buffer_number >= 0
     execute buffer_number . "wincmd w"
