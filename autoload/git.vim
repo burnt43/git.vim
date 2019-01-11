@@ -52,7 +52,7 @@ function! git#GitCommitAndPushCommitMsgFile()
 
   if git_repo_root !=# -1
     echom("really commiting...")
-    let result = system("cd " . git_repo_root . " && git commit -F " . git#CommitMsgFilename() . " && git push")
+    let result = system("cd " . git_repo_root . " && git add " . b:file_to_commit . " && git commit -F " . git#CommitMsgFilename() . " && git push")
     echom(result)
   else
     echoerr "not a git repo"
@@ -73,7 +73,7 @@ function! git#GitDiff()
     else
       call git#OpenOrFocusBuffer('__Git_Diff__')
 
-      normal! ggdG
+      normal! ggdGi
       setlocal filetype=gitdiff
       setlocal buftype=nofile
 
@@ -99,8 +99,9 @@ endfunction
 function! git#GitCommit()
   write
 
-  let git_repo_root  = git#FindGitRepoRoot()
-  let commit_msg_filename = git_repo_root . '/.git/COMMIT_EDITMSG'
+  let git_repo_root                    = git#FindGitRepoRoot()
+  let commit_msg_filename              = git_repo_root . '/.git/COMMIT_EDITMSG'
+  let buffer_name_relative_to_git_repo = git#FindBufferNameRelativeToGitRepo()
 
   if git_repo_root !=# -1
     let open_buffer_result = git#OpenOrFocusBuffer(commit_msg_filename)
@@ -108,6 +109,7 @@ function! git#GitCommit()
     if open_buffer_result
       let b:git_commit_file_written = 0
     endif
+    let b:file_to_commit = buffer_name_relative_to_git_repo
 
     augroup git_commit
       autocmd!
