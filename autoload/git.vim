@@ -119,8 +119,10 @@ function! git#GitCommit()
       autocmd BufWinLeave <buffer> call git#GitCommitAndPushCommitMsgFile()
     augroup END
 
-    normal! ggdGi
+    normal! ggdG
     setlocal filetype=gitcommit
+
+    feedkeys('i')
   else
     echoerr "not a git repo"
   end
