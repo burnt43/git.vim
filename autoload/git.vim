@@ -1,5 +1,5 @@
 " private functions {{{
-function! git#FindGitRepoRoot()
+function! s:git#FindGitRepoRoot()
   if exists("b:git_repo_root")
     return b:git_repo_root
   else
@@ -19,7 +19,7 @@ function! git#FindGitRepoRoot()
 endfunction
 
 function! git#CommitMsgFilename()
-  let git_repo_root = git#FindGitRepoRoot()
+  let git_repo_root = <SID>git#FindGitRepoRoot()
 
   if git_repo_root !=# -1
     return git_repo_root . '/.git/COMMIT_EDITMSG'
@@ -32,7 +32,7 @@ endfunction
 function! git#FindBufferNameRelativeToGitRepo()
   let full_path_of_buffer = fnamemodify(bufname("%"), ":p")
 
-  return fnamemodify(full_path_of_buffer, ':s?' . git#FindGitRepoRoot() . '/??') 
+  return fnamemodify(full_path_of_buffer, ':s?' . <SID>git#FindGitRepoRoot() . '/??') 
 endfunction
 
 function! git#OpenOrFocusBuffer(buffer_name)
@@ -49,7 +49,7 @@ endfunction
 
 function! git#GitCommitAndPushCommitMsgFile()
   if b:git_commit_file_written ==# 1
-    let git_repo_root = git#FindGitRepoRoot()
+    let git_repo_root = <SID>git#FindGitRepoRoot()
 
     if git_repo_root !=# -1
       let git_system_string = "cd " . git_repo_root . " && git add " . b:file_to_commit . " && git commit -F " . git#CommitMsgFilename() . " && git push"
@@ -71,7 +71,7 @@ endfunction
 function! git#GitDiff()
   write
 
-  let git_repo_root = git#FindGitRepoRoot()
+  let git_repo_root = <SID>git#FindGitRepoRoot()
 
   if git_repo_root !=# -1
     let git_diff_result = system("cd " . git_repo_root . "&& git diff " . git#FindBufferNameRelativeToGitRepo())
@@ -95,7 +95,7 @@ function! git#GitDiff()
 endfunction
 
 function! git#GitRefresh()
-  let git_repo_root = git#FindGitRepoRoot()
+  let git_repo_root = <SID>git#FindGitRepoRoot()
 
   if git_repo_root !=# -1
     execute "silent !cd " . git_repo_root . " && git checkout " . git#FindBufferNameRelativeToGitRepo()
@@ -109,7 +109,7 @@ endfunction
 function! git#GitCommit()
   write
 
-  let git_repo_root                    = git#FindGitRepoRoot()
+  let git_repo_root                    = <SID>git#FindGitRepoRoot()
   let commit_msg_filename              = git_repo_root . '/.git/COMMIT_EDITMSG'
   let buffer_name_relative_to_git_repo = git#FindBufferNameRelativeToGitRepo()
 
