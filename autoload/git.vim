@@ -52,8 +52,14 @@ function! git#GitCommitAndPushCommitMsgFile()
     let git_repo_root = git#FindGitRepoRoot()
 
     if git_repo_root !=# -1
-      let result = system("cd " . git_repo_root . " && git add " . b:file_to_commit . " && git commit -F " . git#CommitMsgFilename() . " && git push")
-      echom(result)
+      let git_system_string = "cd " . git_repo_root . " && git add " . b:file_to_commit . " && git commit -F " . git#CommitMsgFilename() . " && git push"
+      echom("executing: " . git_system_string . "...")
+
+      let result = system(git_system_string)
+      
+      for line in split(result, '\v\n')
+        echom(line)
+      endfor
     else
       echoerr "not a git repo"
       return -1
