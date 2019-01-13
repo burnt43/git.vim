@@ -86,6 +86,8 @@ function! git#GitDiff()
       setlocal buftype=nofile
 
       call append(0, split(git_diff_result, '\v\n'))
+
+      normal! gg
     end
   else
     echoerr "not a git repo"
