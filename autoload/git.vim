@@ -47,7 +47,6 @@ function! git#OpenOrFocusBuffer(buffer_name)
   endif
 endfunction
 
-" THIS IS A TEST
 function! git#GitCommitAndPushCommitMsgFile()
   if b:git_commit_file_written ==# 1
     let git_repo_root = git#FindGitRepoRoot()
