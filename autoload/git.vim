@@ -81,9 +81,9 @@ function! git#GitDiff(type)
 
   if git_repo_root !=# -1
     if a:type ==# 'file' 
-      let git_system_string = "cd " . git_repo_root . "&& git diff " . git#FindBufferNameRelativeToGitRepo()
+      let git_system_string = "cd " . git_repo_root . " && git diff " . git#FindBufferNameRelativeToGitRepo()
     elseif a:type ==# 'all'
-      let git_system_string = "cd " . git_repo_root . "&& git diff"
+      let git_system_string = "cd " . git_repo_root . " && git diff"
     endif
 
     let git_diff_result = system(git_system_string)
@@ -116,6 +116,34 @@ function! git#GitRefresh()
   else
     echoerr "not a git repo"
   endif
+endfunction
+
+function! git#GitStatus()
+  write
+
+  let git_repo_root = git#FindGitRepoRoot()
+
+  if git_repo_root !=# -1
+    let git_system_string = "cd " . git_repo_root . " && git status"
+
+    let git_status_result = system(git_system_string)
+
+    if git_status_result =~ '\v^Not a git repository'
+      echoerr "not a git repo"
+    else
+      call git#OpenOrFocusBuffer('__Git_Status__')
+
+      normal! ggdG
+      setlocal filetype=gitstatus
+      setlocal buftype=nofile
+
+      call append(0, split(git_status_result, '\v\n'))
+
+      normal! gg
+    end
+  else
+    echoerr "not a git repo"
+  end
 endfunction
 
 function! git#GitCommit(type)
