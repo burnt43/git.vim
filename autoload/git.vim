@@ -47,13 +47,17 @@ function! git#OpenOrFocusBuffer(buffer_name)
   endif
 endfunction
 
-" THIS IS A TEST
-function! git#GitCommitAndPushCommitMsgFile()
+function! git#GitCommitAndPushCommitMsgFile(type)
   if b:git_commit_file_written ==# 1
     let git_repo_root = git#FindGitRepoRoot()
 
     if git_repo_root !=# -1
-      let git_system_string = "cd " . git_repo_root . " && git add " . b:file_to_commit . " && git commit -F " . git#CommitMsgFilename() . " && git push"
+      if a:type ==# 'file'
+        let git_system_string = "cd " . git_repo_root . " && git add " . b:file_to_commit . " && git commit -F " . git#CommitMsgFilename() . " && git push"
+      elseif a:type ==# 'all'
+        let git_system_string = "cd " . git_repo_root . " && git add -A && git commit -F " . git#CommitMsgFilename() . " && git push"
+      endif
+
       echom("executing: " . git_system_string . "...")
 
       let result = system(git_system_string)
@@ -69,13 +73,19 @@ function! git#GitCommitAndPushCommitMsgFile()
 endfunction
 " }}}
 " public functions {{{
-function! git#GitDiff()
+function! git#GitDiff(type)
   write
 
   let git_repo_root = git#FindGitRepoRoot()
 
   if git_repo_root !=# -1
-    let git_diff_result = system("cd " . git_repo_root . "&& git diff " . git#FindBufferNameRelativeToGitRepo())
+    if a:type ==# 'file' 
+      let git_system_string = "cd " . git_repo_root . "&& git diff " . git#FindBufferNameRelativeToGitRepo()
+    elseif a:type ==# 'all'
+      let git_system_string = "cd " . git_repo_root . "&& git diff"
+    endif
+
+    let git_diff_result = system(git_system_string)
 
     if git_diff_result =~ '\v^Not a git repository'
       echoerr "not a git repo"
@@ -107,7 +117,7 @@ function! git#GitRefresh()
   endif
 endfunction
 
-function! git#GitCommit()
+function! git#GitCommit(type)
   write
 
   let git_repo_root                    = git#FindGitRepoRoot()
@@ -125,7 +135,7 @@ function! git#GitCommit()
     augroup git_commit
       autocmd!
       autocmd BufWritePost <buffer> let b:git_commit_file_written=1
-      autocmd BufWinLeave <buffer> call git#GitCommitAndPushCommitMsgFile()
+      autocmd BufWinLeave <buffer> call git#GitCommitAndPushCommitMsgFile(a:type)
     augroup END
 
     normal! ggdG
