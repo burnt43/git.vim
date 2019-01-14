@@ -135,7 +135,12 @@ function! git#GitCommit(type)
     augroup git_commit
       autocmd!
       autocmd BufWritePost <buffer> let b:git_commit_file_written=1
-      autocmd BufWinLeave <buffer> call git#GitCommitAndPushCommitMsgFile(a:type)
+
+      if a:type ==# 'file'
+        autocmd BufWinLeave <buffer> call git#GitCommitAndPushCommitMsgFile('file')
+      elseif a:type ==# 'all'
+        autocmd BufWinLeave <buffer> call git#GitCommitAndPushCommitMsgFile('all')
+      endif
     augroup END
 
     normal! ggdG
