@@ -65,6 +65,8 @@ function! git#GitCommitAndPushCommitMsgFile(type)
       for line in split(result, '\v\n')
         echom(line)
       endfor
+
+      feedkeys("\<cr>")
     else
       echoerr "not a git repo"
       return -1
