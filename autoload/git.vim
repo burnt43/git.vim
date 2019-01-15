@@ -1,3 +1,4 @@
+" THIS IS A TEST
 " private functions {{{
 function! git#FindGitRepoRoot()
   if exists("b:git_repo_root")
