@@ -30,9 +30,15 @@ function! git#CommitMsgFilename()
 endfunction
 
 function! git#FindBufferNameRelativeToGitRepo()
-  let full_path_of_buffer = fnamemodify(bufname("%"), ":p")
+  let git_repo_root = git#FindGitRepoRoot()
 
-  return fnamemodify(full_path_of_buffer, ':s?' . git#FindGitRepoRoot() . '/??') 
+  if git_repo_root !=# -1
+    let full_path_of_buffer = fnamemodify(bufname("%"), ":p")
+    return fnamemodify(full_path_of_buffer, ':s?' . git#FindGitRepoRoot() . '/??') 
+  else
+    echoerr "not a git repo"
+    return -1
+  endif
 endfunction
 
 function! git#OpenOrFocusBuffer(buffer_name)
