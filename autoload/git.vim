@@ -58,12 +58,12 @@ function! git#GitCommitAndPushCommitMsgFile(type)
         let git_system_string = "cd " . git_repo_root . " && git add -A && git commit -F " . git#CommitMsgFilename() . " && git push"
       endif
 
-      echom("executing: " . git_system_string . "...")
+      echom "[git.vim] executing: " . git_system_string . "..."
 
       let result = system(git_system_string)
       
       for line in split(result, '\v\n')
-        echom(line)
+        echom "[git.vim] " . line
       endfor
 
       call feedkeys("\<cr>")
